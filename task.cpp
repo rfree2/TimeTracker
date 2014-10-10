@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& os, const task& ctask) {
 
 task::~task() {
 	// TODO Auto-generated destructor stub
-	std::cout << "removing task" << std:: endl;
+	_dbg2("");
 }
 
 void task::setType(state type) {
