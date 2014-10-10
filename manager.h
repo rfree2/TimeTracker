@@ -16,7 +16,7 @@ public:
 	manager(std::string log_filename);
 	virtual ~manager();
 
-	void Run();
+	void Run(bool first);
 	void Display();
 	void StartLoop();
 
