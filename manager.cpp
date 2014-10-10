@@ -21,11 +21,15 @@ manager::~manager() {
 
 }
 
-void manager::Run() {
+void manager::Run(bool first) {
 	// creating new task
 	auto new_task = std::make_shared<task>(info::GetCurrWorkspace());
+	if(first==true) {
+		tasks_.push_back(new_task);
+		return;
+	}
 
-	// assert! is any element in vector?
+	assert(tasks_.size());
 
 	if (*new_task == *tasks_.back()) { // new task is the same as last -> continue
 		new_task->setType(task::state::C);
@@ -48,7 +52,7 @@ void manager::Display() {
 void manager::StartLoop() {
 	for(; ;) {
 		sleep(1); // XXX
-		Run();
+		Run(false);
 	}
 }
 
