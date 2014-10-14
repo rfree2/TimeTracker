@@ -21,7 +21,7 @@ public:
 	task(std::string name);
 	task(const std::string &day_time, const std::string &type, const std::string &name);
 	// operators
-	friend std::ostream& operator<<(std::ostream &out, const task &ctask) ; // 2014-Oct-10 10:14:42 B ot
+	friend std::ostream& operator<<(std::ostream &out, const task &ctask) ; // 2014-14-10 10:14:42 B ot
 	bool operator==(const task& task1) const {
 		return (task1.name_ == name_);
 	}
