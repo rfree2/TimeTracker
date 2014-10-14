@@ -17,6 +17,7 @@
 #include <memory>
 #include <algorithm>
 #include <map>
+#include <typeinfo>
 
 #include <cstdio>
 #include <ctime>

@@ -12,12 +12,8 @@ tfile::tfile() :
 				"log") {
 
 	using namespace boost::posix_time;
-//	std::ostringstream oss;
-//	oss << time_date_.date();
-//	name_ = oss.str();
 
-	name_=to_iso_extended_string(time_date_).substr(0,10);
-
+	name_ = to_iso_extended_string(time_date_).substr(0, 10);
 
 	path_ = dir_name_ + "/" + name_;
 
