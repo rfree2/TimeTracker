@@ -9,16 +9,16 @@
 #include "info.h"
 
 manager::manager() :
-		interval_(60), file_() {
-	_fact("start manager");
-
+		interval_(10), 
+		file_() 
+{
+	_fact("start manager, interval="<<interval_);
 	Run(true); // first time run
 	StartLoop();
 }
 
 manager::~manager() {
 	// TODO Auto-generated destructor stub
-
 }
 
 void manager::Run(bool first) {
@@ -76,7 +76,7 @@ void manager::Display() {
 void manager::StartLoop() {
 	_info("inf loop");
 	for (;;) {
-		sleep(2); // XXX
+		sleep(interval_); // XXX config
 		Run(false);
 	}
 }
