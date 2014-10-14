@@ -32,7 +32,8 @@ void analyser::Timesheet(const std::string& filename) {
 		string a;
 		getline(file, a);
 
-		if(a == "") break;
+		if (a == "")
+			break;
 		LineToTask(a);
 	}
 }
@@ -42,10 +43,10 @@ void analyser::LineToTask(const std::string& line) {
 	const auto splited = nOT::nUtils::SplitString(line);
 	assert(splited.size() == 4);
 	for (auto tmp : splited)
-		_dbg1(tmp);
+		_dbg3(tmp);
 
 	// format:
-	//	   [0]            [1]      [2]   [3]
+	//     [0]             [1]      [2]   [3]
 	//	2014-Oct-10		16:19:43	C	task
 
 	auto new_task = std::make_shared<task>(splited.at(0) + " " + splited.at(1),

@@ -9,12 +9,14 @@
 #define LIBS_H_
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <fstream>
 #include <memory>
 #include <algorithm>
+#include <map>
 
 #include <cstdio>
 #include <ctime>

@@ -21,8 +21,7 @@ std::ostream& operator<<(std::ostream& os, const task& ctask) {
 }
 
 task::~task() {
-	// TODO Auto-generated destructor stub
-	_dbg2("Destructing task " << name_);
+	_dbg2("Destructing task " << name_ << " [" << states_.at(type_) << "]");
 }
 
 void task::setType(state type) {
