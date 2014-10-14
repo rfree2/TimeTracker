@@ -10,6 +10,8 @@
 
 manager::manager() :
 		interval_(60), file_() {
+	_fact("start manager");
+
 	Run(true); // first time run
 	StartLoop();
 }
@@ -21,7 +23,10 @@ manager::~manager() {
 
 void manager::Run(bool first) {
 	// creating new task
+	_dbg3("");
 	auto new_task = std::make_shared<task>(info::GetCurrWorkspace());
+
+	_dbg3("curr task: [" << *new_task << "]");
 
 	if (first == true) {
 		Save(new_task);
@@ -69,6 +74,7 @@ void manager::Display() {
 }
 
 void manager::StartLoop() {
+	_info("inf loop");
 	for (;;) {
 		sleep(2); // XXX
 		Run(false);
@@ -76,6 +82,7 @@ void manager::StartLoop() {
 }
 
 void manager::Save(std::shared_ptr<task> tts) {
+	_dbg3("saving task: " << *tts);
 	tasks_.push_back(tts);
 	bool ok = file_.Save(*tts);
 	assert(ok);

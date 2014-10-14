@@ -15,7 +15,11 @@ const map<string, int> initializer::options = { { "-a", 1 }, { "-T", 0 } };
 
 initializer::initializer() :
 		runFlag(false) {
+	using namespace boost::posix_time;
+	using namespace std;
 
+	time_facet* facet(new time_facet("%Y-%m-%d"));
+	cout.imbue(locale(cout.getloc(), facet));
 }
 
 initializer::~initializer() {
@@ -33,6 +37,11 @@ void initializer::PrintHelp() {
 
 void initializer::Run(const std::vector<std::string>& args) {
 	_info(args.size());
+	if (args.size() < 2) {
+		PrintHelp();
+		return;
+	}
+
 	runFlag = Parse(args);
 	if (runFlag) {
 		_fact("Parsing completed without error");
@@ -50,8 +59,7 @@ void initializer::Run(const std::string& opt,
 
 	if (opt == "-a") {
 		analyser A(params.at(0));
-	}
-	else if (opt == "-T") {
+	} else if (opt == "-T") {
 		manager M;
 	}
 
