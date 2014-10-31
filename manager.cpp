@@ -9,7 +9,7 @@
 #include "info.h"
 
 manager::manager() :
-		interval_(10), 
+		interval_(20), 
 		file_() 
 {
 	_fact("start manager, interval="<<interval_);

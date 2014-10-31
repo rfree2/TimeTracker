@@ -19,13 +19,28 @@ info::~info() {
 }
 
 string info::GetCurrWorkspace() {
+	try {
+		return GetCurrWorkspace_Detail();
+	} catch(...);
+	return "nodesk";
+}
+
+std::string info::GetCurrWin() {
+	try {
+		return GetCurrWin_Detail();
+	} catch(...);
+	return "nowindow";
+}
+
+string info::GetCurrWorkspace_Detail() {
 	auto w = Command(" wmctrl -d | grep \"*\" | awk \'{print $10 }\'"); // TODO better way to get workspace name
-	assert(w!="ERROR");
+	// assert(w!="ERROR");
+	if (!(w!="ERROR")) throw std::runtime_error("Error in command");
 	w.pop_back();
 	return w;
 }
 
-std::string info::GetCurrWin() {
+std::string info::GetCurrWin_Detail() {
 	Display *display;
 	Window focus;
 	char *window_name;
