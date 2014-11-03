@@ -32,6 +32,5 @@
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
 #include "otshell_utils/utils.hpp"
-#include "bprinter/table_printer.h"
 
 #endif /* LIBS_H_ */

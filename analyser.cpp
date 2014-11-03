@@ -6,12 +6,13 @@
  */
 
 #include "analyser.h"
-#include "bprinter/table_printer.h"
-analyser::analyser(const std::string& filename) {
+
+analyser::analyser(const std::string& filename) :
+		displayAll_(false) {
 	bool e = boost::filesystem::exists(filename);
 	_fact(filename);
 	if (e)
-		Timesheet(filename);
+	Timesheet(filename);
 
 }
 
@@ -33,19 +34,19 @@ void analyser::Timesheet(const std::string& filename) {
 		getline(file, a);
 
 		if (a == "")
-			break;
-		LineToTask(a);
+		break;
+		TimesheetProcess(a);
 	}
 	Correct();
 	PrintTable();
 }
 
-void analyser::LineToTask(const std::string& line) {
+std::shared_ptr<task> analyser::LineToTask(const std::string &line) {
 	using namespace boost::posix_time;
 	const auto splited = nOT::nUtils::SplitString(line);
 	assert(splited.size() == 4);
-//	for (auto tmp : splited)
-//		_dbg3(tmp);
+	//	for (auto tmp : splited)
+	//		_dbg3(tmp);
 
 	// format:
 	//     [0]             [1]      [2]   [3]
@@ -59,7 +60,11 @@ void analyser::LineToTask(const std::string& line) {
 	oss << *new_task;
 
 	assert(line == oss.str());
+	return new_task;
+}
 
+void analyser::TimesheetProcess(const std::string& line) {
+	auto new_task = LineToTask(line);
 	const auto type = new_task->getType();
 
 	if (type == task::state::B) { // if new task has type "begin" create new info struct
@@ -70,7 +75,8 @@ void analyser::LineToTask(const std::string& line) {
 		task_info->start_time = new_task->day_time_;
 		task_info->has_end = false;
 		taskInformations_.push_back(task_info);
-	} else if (type == task::state::E) { // end - save ending time to struct
+	}
+	else if (type == task::state::E) { // end - save ending time to struct
 		const auto stru = taskInformations_.back();
 		const auto ttask = stru->ttask;
 		if (*new_task != *ttask) {
@@ -88,7 +94,7 @@ void analyser::LineToTask(const std::string& line) {
 //		PrintOne(taskInformations_.back());
 
 	}
-	ltask=new_task;
+	ltask = new_task;
 }
 
 void analyser::PrintOne(const std::shared_ptr<taskInfo> top) const {
@@ -100,21 +106,143 @@ void analyser::PrintTable() const {
 	using namespace std;
 	using namespace boost::posix_time;
 	for (auto ttask : taskInformations_) {
-		const auto st = to_iso_extended_string(ttask->start_time).substr(11,18);
-		const auto et = to_iso_extended_string(ttask->end_time).substr(11,18);
+		const auto st = to_iso_extended_string(ttask->start_time).substr(11, 18);
+		const auto et = to_iso_extended_string(ttask->end_time).substr(11, 18);
 
-		cout << setw(10) <<ttask->name << " | " << st << " "<< et << " "<<  ttask->total_time << " \n";
+		cout << setw(10) << ttask->name << " | " << st << " " << et << " " << ttask->total_time << " \n";
+	}
+}
+
+void analyser::AddMap(const std::shared_ptr<task> task_, std::map<std::string,
+		taskInfo> &map) {
+	const auto name = task_->name_;
+	taskInfo tstruct;
+	tstruct.name = name;
+	tstruct.start_time = task_->day_time_;
+
+	map.insert(std::pair<std::string, taskInfo>(name, tstruct));
+}
+
+void analyser::PrintMaps() const {
+	using namespace std;
+	const string sep = "+-----------------------------------";
+
+	for (auto &it1 : Map_) {
+		cout << "\t" << it1.first << endl;
+		for (auto& it : it1.second) {
+			cout << sep << endl;
+			cout << "| Name: | " << it.first << endl;
+			cout << "| Time: | " << it.second.total_time << endl;
+		}
+		cout << sep << endl;
+		cout << endl;
+
+	}
+}
+
+void analyser::Display() {
+	if (!displayAll_) {
+		PrintMaps();
+		return;
+	}
+	using namespace std;
+	Merge();
+	const string sep = "+-----------------------------------";
+
+	for (auto& it : mergedMap_) {
+		cout << sep << endl;
+		cout << "| Name: | " << it.first << endl;
+		cout << "| Time: | " << it.second.total_time << endl;
+	}
+	cout << sep << endl;
+	cout << endl;
+
+}
+
+void analyser::Merge() {
+	using namespace std;
+	assert(!Map_.empty());
+
+	for (auto &it1 : Map_) {
+		for (auto& it : it1.second) {
+			auto found = mergedMap_.find(it.first);
+
+			if (found == mergedMap_.end())
+			mergedMap_.insert(pair<string, taskInfo>(it.first, it.second));
+			else {
+				mergedMap_.at(it.first).total_time += it.second.total_time;
+			}
+		}
 	}
 }
 
 void analyser::Correct() {
-	if(taskInformations_.empty()) return;
-	if(taskInformations_.back()->has_end) return;
+	if (taskInformations_.empty()) return;
+	if (taskInformations_.back()->has_end) return;
 
 	_info("correcting");
 	taskInformations_.back()->end_time = ltask->day_time_;
 	taskInformations_.back()->total_time = taskInformations_.back()->end_time
 			- taskInformations_.back()->start_time;
 	taskInformations_.back()->has_end = true;
+
+}
+
+analyser::analyser(std::vector<std::string> fnames, bool da) :
+		displayAll_(da) {
+	bool ok = false;
+	for (auto fn : fnames) {
+		if (boost::filesystem::exists(fn)) ok = true;
+	}
+
+	assert(ok);
+	SummaryGetFromFile(fnames);
+
+}
+
+void analyser::SummaryGetFromFile(std::vector<std::string>& fnames) {
+	using namespace std;
+	sort(fnames.begin(), fnames.end());
+
+	for (auto fname : fnames) {
+		_dbg2(fname);
+		fstream file;
+		file.open(fname.c_str(), ios::in | ios::out);
+
+		if (!file.is_open()) // can't open file, nothing to do
+		_warn("Can't open file " << fname);
+
+		else {
+			//_mark();
+			taskInfo tstruct;
+			map<string, taskInfo> dMap;
+			Map_.insert(std::pair<std::string, std::map<std::string, taskInfo> >(fname, dMap));
+
+			while (!file.eof()) {
+				string a = "";
+				getline(file, a);
+				if (a == "") break;
+				SummaryProcessTask(LineToTask(a), Map_.at(fname));
+			}
+		}
+	}
+	Display();
+}
+
+void analyser::SummaryProcessTask(const std::shared_ptr<task> task_, std::map<
+		std::string, taskInfo> &taskMap) {
+	const auto tname = task_->name_;
+
+	auto it = taskMap.find(tname); // exist element with key tname?
+	if (it == taskMap.end()) { // not found, create them, nothing to do
+		AddMap(task_, taskMap);
+		return;
+	}
+
+	auto &tinfo = it->second;
+	auto &start_time = tinfo.start_time;
+	auto &curr_time = task_->day_time_;
+
+	tinfo.total_time = curr_time - start_time;
 
 }

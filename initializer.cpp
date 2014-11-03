@@ -11,7 +11,13 @@
 
 using namespace std;
 
-const map<string, int> initializer::options = { { "-a", 1 }, { "-T", 0 } };
+const map< string, pair_> initializer::options = {
+		{ "-a",     {"<file> print timesheet from file",  "1"} },
+		{ "-T",     {"start tracking" ,                   "0"} },
+		{ "-Sd",    {"<files> print daily summary",      "-1"} },
+		{ "-Sa",    {"<files> print all summary",        "-1"} },
+		{ "--help", {"print help" ,                       "0"} }
+};
 
 initializer::initializer() :
 		runFlag(false) {
@@ -27,11 +33,14 @@ initializer::~initializer() {
 }
 
 void initializer::PrintHelp() {
-	cout << "Usage: " << endl;
-	cout << "-a <file>  " << "print summary from file" << endl;
-	cout << "-T         " << "start tracking" << endl;
 
 	// TODO: cout << "-A <files>"<< endl;
+	auto sep = "--------------------------------------------";
+	cout << sep << endl;
+	for(auto it : options) {
+		cout << it.first << "\t " << it.second.front() << endl;
+	}
+	cout << sep << endl;
 
 }
 
@@ -43,31 +52,36 @@ void initializer::Run(const std::vector<std::string>& args) {
 	}
 
 	runFlag = Parse(args);
+
 	if (runFlag) {
-		_fact("Parsing completed without error");
+		_fact("Parsing completed without errors");
 		Run(args.at(1), SubVec(2, args));
-	} else
+	}
+	else
 		PrintHelp();
 
 }
 
-void initializer::Run(const std::string& opt,
-		const std::vector<std::string>& params) {
+void initializer::Run(const std::string& opt, const std::vector<std::string>& params) {
+	using namespace std;
 
-	const auto advOpt = options.find(opt);
-	assert(advOpt != options.end()); // parser should check this
+	//const auto advOpt = options.find(opt);
+	//assert(advOpt != options.end()); // parser should check this
 
-	if (opt == "-a") {
-		analyser A(params.at(0));
-	} else if (opt == "-T") {
-		manager M;
-	}
+	if (opt == "-a") analyser A(params.at(0));
+	if (opt == "-T") manager M;
+	if (opt == "-Sd") analyser A(params,false);
+	if (opt == "-Sa") analyser A(params,true);
+	if (opt == "--help") PrintHelp();
 
 }
 
 bool initializer::Parse(const std::vector<std::string>& args) {
 	const auto opt = args.at(1);
-	const auto it = options.find(opt);
+//	map<string, pair_>::iterator it;
+	auto it = options.find(opt);
+//	pair_ it = options.find(opt);
+//	it = options.find(opt);
 
 	auto error = []() ->void {_erro("Invalid usage of this option");};
 
@@ -76,24 +90,26 @@ bool initializer::Parse(const std::vector<std::string>& args) {
 		return false;
 	}
 
-	_dbg2("Found option: " << it->first << " -> " << it->second);
-	const int numbP = it->second;
+	_dbg2("Found option: " << it->first << " -> " << it->second.at(1));
+	const int numbP = stoi(  it->second.at(1) );
 	const int bsize = args.size() - 2;
 
 	_dbg2("bsize: " << bsize << " vs parm: " << numbP);
 
 	// calculate numbers of next params
 
+
 	if (bsize >= 0) {  // finite numbers of params
 		if (numbP == bsize)
-			_fact("all ok");
+		_fact("all ok");
 		else if (numbP < bsize)
-			_warn("to many params for this options, last ones will be ignored");
+		_warn("to many params for this options, last ones will be ignored");
 		else if (numbP > bsize) {
 			error();
 			return false;
 		}
-	} else { // infinite params
+	}
+	else { // infinite params
 		if (bsize < 1) { // no params = error
 			error();
 			return false;
