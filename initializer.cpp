@@ -83,7 +83,7 @@ bool initializer::Parse(const std::vector<std::string>& args) {
 //	pair_ it = options.find(opt);
 //	it = options.find(opt);
 
-	auto error = []() ->void {_erro("Invalid usage of this option");};
+//	auto error = []() ->void {_erro("Invalid usage of this option");};
 
 	if (it == options.end()) {
 		_erro("Option " << opt << " does not exist");
@@ -99,21 +99,19 @@ bool initializer::Parse(const std::vector<std::string>& args) {
 	// calculate numbers of next params
 
 
-	if (bsize >= 0) {  // finite numbers of params
+	if (bsize >= 0 && numbP > -1) {  // finite numbers of params
 		if (numbP == bsize)
-		_fact("all ok");
+			_fact("all ok");
 		else if (numbP < bsize)
-		_warn("to many params for this options, last ones will be ignored");
+			_warn("to many args for this options, last ones will be ignored");
 		else if (numbP > bsize) {
-			error();
+			_erro("Exepected " << numbP << " params");
 			return false;
 		}
 	}
-	else { // infinite params
-		if (bsize < 1) { // no params = error
-			error();
-			return false;
-		}
+	if (numbP == -1 && bsize < 1) { // infinite params
+		_erro("Expected 1>= args!");
+		return false;
 	}
 
 	return true;
