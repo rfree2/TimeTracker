@@ -9,11 +9,9 @@
 
 analyser::analyser(const std::string& filename) :
 		displayAll_(false), logging(false) {
-	bool e = boost::filesystem::exists(filename);
-	_fact(filename);
-	if (e)
-	Timesheet(filename);
-
+	_info(filename);
+	if (ControlFile(filename))
+		Timesheet(filename);
 }
 
 analyser::~analyser() {
@@ -192,7 +190,7 @@ analyser::analyser(std::vector<std::string> fnames, bool da) :
 		displayAll_(da), logging(false) {
 	bool ok = false;
 	for (auto fn : fnames)
-		if (boost::filesystem::exists(fn)) ok = true;
+		if (ControlFile(fn)) ok = true;
 
 	assert(ok);
 	SummaryGetFromFile(fnames);
@@ -249,7 +247,7 @@ analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging
 	const std::string dir = "data/";
 	bool ok = false;
 	for (auto fn : fnames)
-		if (boost::filesystem::exists(fn)) ok = true;
+		if (ControlFile(fn)) ok = true;
 
 	assert(ok);
 	SummaryGetFromFile(fnames);
@@ -271,7 +269,7 @@ analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging
 
 	_mark(logname);
 
-	if(!boost::filesystem::exists(logname))
+	if(!boost::filesystem::exists(dir))
 		assert(boost::filesystem::create_directory(dir));
 
 	assert(!boost::filesystem::exists(logname));
@@ -291,4 +289,14 @@ analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging
 	Display();
 
 	logger.close();
+}
+
+bool analyser::ControlFile(const std::string& name) const {
+	bool e = boost::filesystem::exists(name);
+	if(!e) _erro("File [" << name <<"] doesn't exist!" );
+
+	if(name.find(".task")==std::string::npos)
+		_warn("File: [" << name << "] has wrong extension, trying to read them");
+
+	return e;
 }

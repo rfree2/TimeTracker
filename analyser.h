@@ -61,6 +61,7 @@ private:
 	void PrintMaps() const;
 	void Display();
 	void Correct();
+	bool ControlFile(const std::string &name) const;
 };
 
 #endif /* ANALYSER_H_ */

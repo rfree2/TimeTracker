@@ -15,7 +15,7 @@ tfile::tfile() :
 
 	name_ = to_iso_extended_string(time_date_).substr(0, 10);
 
-	path_ = dir_name_ + "/" + name_;
+	path_ = dir_name_ + "/" + name_ + ".tasks";
 
 	_info("filename will be: [" << name_ <<"]"); // TODO month as number
 
