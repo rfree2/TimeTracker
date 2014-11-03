@@ -9,11 +9,14 @@
 #define LIBS_H_
 
 #include <iostream>
+#include <fstream>
+#include <istream>
+#include <ostream>
+
 #include <iomanip>
 #include <string>
 #include <sstream>
 #include <vector>
-#include <fstream>
 #include <memory>
 #include <algorithm>
 #include <map>
@@ -28,8 +31,12 @@
 
 #include "boost/date_time.hpp"
 #include "boost/filesystem.hpp"
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
+
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/tee.hpp>
 
 #include "otshell_utils/utils.hpp"
 

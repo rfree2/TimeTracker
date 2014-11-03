@@ -8,7 +8,7 @@
 #include "analyser.h"
 
 analyser::analyser(const std::string& filename) :
-		displayAll_(false) {
+		displayAll_(false), logging(false) {
 	bool e = boost::filesystem::exists(filename);
 	_fact(filename);
 	if (e)
@@ -189,15 +189,14 @@ void analyser::Correct() {
 }
 
 analyser::analyser(std::vector<std::string> fnames, bool da) :
-		displayAll_(da) {
+		displayAll_(da), logging(false) {
 	bool ok = false;
-	for (auto fn : fnames) {
+	for (auto fn : fnames)
 		if (boost::filesystem::exists(fn)) ok = true;
-	}
 
 	assert(ok);
 	SummaryGetFromFile(fnames);
-
+	Display();
 }
 
 void analyser::SummaryGetFromFile(std::vector<std::string>& fnames) {
@@ -226,7 +225,6 @@ void analyser::SummaryGetFromFile(std::vector<std::string>& fnames) {
 			}
 		}
 	}
-	Display();
 }
 
 void analyser::SummaryProcessTask(const std::shared_ptr<task> task_, std::map<
@@ -245,4 +243,52 @@ void analyser::SummaryProcessTask(const std::shared_ptr<task> task_, std::map<
 
 	tinfo.total_time = curr_time - start_time;
 
+}
+
+analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging(true) {
+	const std::string dir = "data/";
+	bool ok = false;
+	for (auto fn : fnames)
+		if (boost::filesystem::exists(fn)) ok = true;
+
+	assert(ok);
+	SummaryGetFromFile(fnames);
+
+	using namespace std;
+	const auto tdate = boost::posix_time::second_clock::local_time();
+	ostringstream oss;
+	oss << "OUT-" << tdate << ".txt";
+	string logname = dir + oss.str();
+	logname.replace(logname.find(" "), 1, "-");
+	size_t control = string::npos;
+
+	while(control != string::npos){
+		control = logname.find(":");
+		logname.replace(control, 1, " ");
+	}
+
+	assert(logname.find(" ")==string::npos);
+
+	_mark(logname);
+
+	if(!boost::filesystem::exists(logname))
+		assert(boost::filesystem::create_directory(dir));
+
+	assert(!boost::filesystem::exists(logname));
+
+	// redirecting cout stream
+	// http://coliru.stacked-crooked.com/a/9c4729dd796c5daf
+	ofstream logFile;
+	logFile.open(logname.c_str());
+	ostream tmp(cout.rdbuf());
+	TeeDevice outputDevice(tmp, logFile); // <----
+	TeeStream logger(outputDevice);
+
+	cout.rdbuf(logger.rdbuf());
+
+	PrintMaps();
+	cout << "\t == ALL ==" << endl;
+	Display();
+
+	logger.close();
 }

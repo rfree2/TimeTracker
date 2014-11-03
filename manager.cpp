@@ -10,9 +10,9 @@
 
 manager::manager() :
 		interval_test_(2),
-				interval_continue_(10),
-				interval_change_grace_(6),
-				file_()
+		interval_continue_(10),
+		interval_change_grace_(6),
+		file_()
 {
 	_fact("start manager, interval_test_="<<interval_test_);
 

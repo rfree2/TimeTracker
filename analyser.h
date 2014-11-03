@@ -11,14 +11,14 @@
 #include "libs.h"
 #include "task.h"
 
-//namespace bprinter {
-//	class TablePrinter;
-//}
+typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
+typedef boost::iostreams::stream<TeeDevice> TeeStream;
 
 class analyser {
 public:
 	analyser(const std::string &filename);
 	analyser(std::vector <std::string> fnames, bool da);
+	analyser(std::vector <std::string> fnames);
 
 	virtual ~analyser();
 	void Timesheet(const std::string &filename);
@@ -53,7 +53,7 @@ private:
 	std::vector <std::shared_ptr<taskInfo>> taskInformations_;
 	std::shared_ptr <task> ltask;
 	const bool displayAll_;
-
+	const bool logging;
 
 	void AddMap(const std::shared_ptr<task> task_, std::map <std::string, taskInfo> &map);
 	void PrintOne(const std::shared_ptr<taskInfo> top) const;

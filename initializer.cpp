@@ -16,6 +16,7 @@ const map< string, pair_> initializer::options = {
 		{ "-T",     {"start tracking" ,                   "0"} },
 		{ "-Sd",    {"<files> print daily summary",      "-1"} },
 		{ "-Sa",    {"<files> print all summary",        "-1"} },
+		{ "-SS",    {"<files> save summary to file ",    "-1"} },
 		{ "--help", {"print help" ,                       "0"} }
 };
 
@@ -72,6 +73,7 @@ void initializer::Run(const std::string& opt, const std::vector<std::string>& pa
 	if (opt == "-T") manager M;
 	if (opt == "-Sd") analyser A(params,false);
 	if (opt == "-Sa") analyser A(params,true);
+	if (opt == "-SS") analyser A(params);
 	if (opt == "--help") PrintHelp();
 
 }
