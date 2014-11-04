@@ -41,3 +41,12 @@ task::task(const std::string &day_time, const std::string &type,
 	const auto pos = it - states_.begin();
 	type_ = static_cast<state>(pos);
 }
+
+std::string task::dateToString() {
+	using namespace std;
+	ostringstream oss;
+	oss << day_time_;
+	auto sdate = oss.str();
+	info::Cut(sdate);
+	return to_iso_extended_string(day_time_).substr(0, 10);
+}

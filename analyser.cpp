@@ -8,7 +8,7 @@
 #include "analyser.h"
 
 analyser::analyser(const std::string& filename) :
-		displayAll_(false), logging(false) {
+		displayAll_(false) {
 	_info(filename);
 	if (ControlFile(filename))
 		Timesheet(filename);
@@ -175,19 +175,18 @@ void analyser::Merge() {
 }
 
 void analyser::Correct() {
-	if (taskInformations_.empty()) return;
-	if (taskInformations_.back()->has_end) return;
+	if (taskInformations_.empty()) return; // nothing to do
+	if (taskInformations_.back()->has_end) return; // nothing to do
 
 	_info("correcting");
 	taskInformations_.back()->end_time = ltask->day_time_;
 	taskInformations_.back()->total_time = taskInformations_.back()->end_time
 			- taskInformations_.back()->start_time;
 	taskInformations_.back()->has_end = true;
-
 }
 
 analyser::analyser(std::vector<std::string> fnames, bool da) :
-		displayAll_(da), logging(false) {
+		displayAll_(da) {
 	bool ok = false;
 	for (auto fn : fnames)
 		if (ControlFile(fn)) ok = true;
@@ -209,24 +208,31 @@ void analyser::SummaryGetFromFile(std::vector<std::string>& fnames) {
 		if (!file.is_open()) // can't open file, nothing to do
 		_warn("Can't open file " << fname);
 
-		else {
-			//_mark();
-			taskInfo tstruct;
-			map<string, taskInfo> dMap;
-			Map_.insert(std::pair<std::string, std::map<std::string, taskInfo> >(fname, dMap));
+		else { // file is open
+			string task_date = "";
 
+			// reading file
 			while (!file.eof()) {
 				string a = "";
 				getline(file, a);
-				if (a == "") break;
-				SummaryProcessTask(LineToTask(a), Map_.at(fname));
+				if (a == "") break; // no data = brak loop
+
+				auto tmp_task = LineToTask(a);
+				assert(tmp_task->dateToString() != "");
+
+				// if current task is first or has different date than previous, create new map for this task
+				if (task_date != tmp_task->dateToString() || task_date == "") {
+					task_date = tmp_task->dateToString();
+					taskInfo tstruct;
+					map<string, taskInfo> dMap;
+					Map_.insert(std::pair<std::string, std::map<std::string, taskInfo> >(task_date, dMap));
+				} SummaryProcessTask(tmp_task, Map_.at(task_date));
 			}
 		}
 	}
 }
 
-void analyser::SummaryProcessTask(const std::shared_ptr<task> task_, std::map<
-		std::string, taskInfo> &taskMap) {
+void analyser::SummaryProcessTask(const std::shared_ptr<task> task_, std::map<std::string, taskInfo> &taskMap) {
 	const auto tname = task_->name_;
 
 	auto it = taskMap.find(tname); // exist element with key tname?
@@ -235,15 +241,14 @@ void analyser::SummaryProcessTask(const std::shared_ptr<task> task_, std::map<
 		return;
 	}
 
+	// saving informations
 	auto &tinfo = it->second;
 	auto &start_time = tinfo.start_time;
 	auto &curr_time = task_->day_time_;
-
 	tinfo.total_time = curr_time - start_time;
-
 }
 
-analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging(true) {
+analyser::analyser(std::vector<std::string> fnames) : displayAll_(true) {
 	const std::string dir = "data/";
 	bool ok = false;
 	for (auto fn : fnames)
@@ -252,23 +257,24 @@ analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging
 	assert(ok);
 	SummaryGetFromFile(fnames);
 
+	// preparing logname
 	using namespace std;
 	const auto tdate = boost::posix_time::second_clock::local_time();
 	ostringstream oss;
 	oss << "OUT-" << tdate << ".txt";
 	string logname = dir + oss.str();
+
+	// no spaces and :
 	logname.replace(logname.find(" "), 1, "-");
 	size_t control = string::npos;
-
 	while(control != string::npos){
 		control = logname.find(":");
 		logname.replace(control, 1, " ");
 	}
-
 	assert(logname.find(" ")==string::npos);
-
 	_mark(logname);
 
+	// directory for logs
 	if(!boost::filesystem::exists(dir))
 		assert(boost::filesystem::create_directory(dir));
 
@@ -284,6 +290,7 @@ analyser::analyser(std::vector<std::string> fnames) : displayAll_(true), logging
 
 	cout.rdbuf(logger.rdbuf());
 
+	// printing
 	PrintMaps();
 	cout << "\t == ALL ==" << endl;
 	Display();

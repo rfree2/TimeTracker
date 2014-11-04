@@ -3,6 +3,9 @@
 Debug/TimeTracker
 log
 *~
+doc/
+*.sh
+
 # Created by https://www.gitignore.io
 
 ### CMake ###

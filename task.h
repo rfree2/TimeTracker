@@ -35,6 +35,8 @@ public:
 		return type_;
 	}
 
+	std::string dateToString();
+
 	void setType(state type);
 
 	// are public because const
