@@ -9,6 +9,7 @@
 #include "analyser.h"
 #include "manager.h"
 #include "timesheet.h"
+#include "summary.h"
 
 using namespace std;
 
@@ -73,19 +74,16 @@ void initializer::Run(const std::string& opt, const std::vector<std::string>& pa
 	//if (opt == "-a") analyser A(params.at(0));
 	if (opt == "-a") timesheet T(params.at(0));
 	if (opt == "-T") manager M;
-	if (opt == "-Sd") analyser A(params,false);
-	if (opt == "-Sa") analyser A(params,true);
-	if (opt == "-SS") analyser A(params);
+	if (opt == "-Sd") summary S(params, false, false);
+	if (opt == "-Sa") summary S(params,true, false);
+	if (opt == "-SS") summary S(params, false, true);
 	if (opt == "--help") PrintHelp();
 
 }
 
 bool initializer::Parse(const std::vector<std::string>& args) {
 	const auto opt = args.at(1);
-//	map<string, pair_>::iterator it;
 	auto it = options.find(opt);
-//	pair_ it = options.find(opt);
-//	it = options.find(opt);
 
 //	auto error = []() ->void {_erro("Invalid usage of this option");};
 
