@@ -1,10 +1,11 @@
-# My own 
 *.d
 Debug/TimeTracker
 log
 *~
 doc/
 *.sh
+Debug/data/
+wmctrl*
 
 # Created by https://www.gitignore.io
 
@@ -77,5 +78,3 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
-
-/Debug/

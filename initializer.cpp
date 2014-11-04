@@ -8,6 +8,7 @@
 #include "initializer.h"
 #include "analyser.h"
 #include "manager.h"
+#include "timesheet.h"
 
 using namespace std;
 
@@ -69,7 +70,8 @@ void initializer::Run(const std::string& opt, const std::vector<std::string>& pa
 	//const auto advOpt = options.find(opt);
 	//assert(advOpt != options.end()); // parser should check this
 
-	if (opt == "-a") analyser A(params.at(0));
+	//if (opt == "-a") analyser A(params.at(0));
+	if (opt == "-a") timesheet T(params.at(0));
 	if (opt == "-T") manager M;
 	if (opt == "-Sd") analyser A(params,false);
 	if (opt == "-Sa") analyser A(params,true);
