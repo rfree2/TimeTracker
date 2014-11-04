@@ -35,7 +35,7 @@ private:
 	void display(); // if displayAll is true, prints mergeMap_
 
 	std::map <std::string, taskInfo> mergedMap_; // map with merged tasks from files
-
+	std::vector <std::string> dates_;
 	// contains date (as key) and map for every day
 	// [ name ] [ map[name][taskInfo] ]
 	std::map <std::string, std::map <std::string, taskInfo> > Map_;

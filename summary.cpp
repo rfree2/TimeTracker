@@ -106,8 +106,7 @@ void summary::getFromFile(std::vector<std::string>& fnames) {
 					task_date = tmp_task->dateToString();
 					taskInfo tstruct;
 					map<string, taskInfo> dMap;
-					Map_.insert(std::pair<std::string,
-							std::map<std::string, taskInfo> >(task_date, dMap));
+					Map_.insert(std::pair<std::string, std::map<std::string, taskInfo> >(task_date, dMap));
 				}
 				processTask(tmp_task, Map_.at(task_date));
 			}
@@ -118,7 +117,6 @@ void summary::getFromFile(std::vector<std::string>& fnames) {
 void summary::processTask(const std::shared_ptr<task> task_, std::map<
 		std::string, taskInfo>& taskMap) {
 	const auto tname = task_->name_;
-
 	auto it = taskMap.find(tname); // exist element with key tname?
 	if (it == taskMap.end()) { // not found, create them, nothing to do
 		addToMap(task_, taskMap);
@@ -137,6 +135,7 @@ void summary::merge() {
 	assert(!Map_.empty());
 
 	for (auto &it1 : Map_) {
+		dates_.push_back(it1.first);
 		for (auto& it : it1.second) {
 			auto found = mergedMap_.find(it.first);
 
@@ -181,6 +180,11 @@ void summary::display() {
 	}
 	using namespace std;
 	merge();
+	assert(!dates_.empty());
+
+	cout << "\tDays: " << endl;
+	for (auto day : dates_) cout << day << endl;
+
 	const string sep = "+-----------------------------------";
 
 	for (auto& it : mergedMap_) {
