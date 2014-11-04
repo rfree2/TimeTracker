@@ -18,6 +18,7 @@ public:
 	static std::string GetCurrWorkspace(); // uses wmctrl and awk
 	static std::string GetCurrWin(); // FIXME: For some application (e.g xchat) c-string is NULL (works for e.g. chromium)
 	static std::string Command(char *cmd); // executes bash command and return >>output<<
+	static std::vector<std::string> splitString(std::string toSplit, std::string delimiter);
 
 	static void Cut(std::string &s);
 

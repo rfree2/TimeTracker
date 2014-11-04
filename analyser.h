@@ -62,7 +62,7 @@ private:
 	const bool displayAll_; // display all task or daily
 
 	void AddMap(const std::shared_ptr<task> task_, std::map <std::string, taskInfo> &map); // adding task to given map
-	void PrintOne(const std::shared_ptr<taskInfo> top) const; // prints taskInfo
+	void PrintOne(const std::shared_ptr<taskInfo> top) const; // prints taskInfo (not used at now)
 	void PrintTable() const; // Timesheet - print taskInfos
 	void PrintMaps() const; // prints Map_ and submap
 	void Display(); // if displayAll is true, prints mergeMap_

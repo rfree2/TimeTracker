@@ -48,7 +48,10 @@ std::shared_ptr<task> analyser::LineToTask(const std::string &line) {
 
 	// format:
 	//     [0]             [1]      [2]   [3]
-	//	2014-Oct-10		16:19:43	C	task
+	//	2014-Oct-10		16:19:43	C	  task
+
+	// splited.at(2) must be type of task
+	assert(splited.at(2) == "B" || splited.at(2) == "C" || splited.at(2) == "E");
 
 	auto new_task = std::make_shared<task>(splited.at(0) + " " + splited.at(1),
 			splited.at(2), splited.at(3));
@@ -88,9 +91,7 @@ void analyser::TimesheetProcess(const std::string& line) {
 		taskInformations_.back()->total_time =
 				taskInformations_.back()->end_time
 						- taskInformations_.back()->start_time;
-
 //		PrintOne(taskInformations_.back());
-
 	}
 	ltask = new_task;
 }
@@ -134,7 +135,6 @@ void analyser::PrintMaps() const {
 		}
 		cout << sep << endl;
 		cout << endl;
-
 	}
 }
 
@@ -154,7 +154,6 @@ void analyser::Display() {
 	}
 	cout << sep << endl;
 	cout << endl;
-
 }
 
 void analyser::Merge() {
@@ -199,6 +198,11 @@ analyser::analyser(std::vector<std::string> fnames, bool da) :
 void analyser::SummaryGetFromFile(std::vector<std::string>& fnames) {
 	using namespace std;
 	sort(fnames.begin(), fnames.end());
+
+	auto start = info::splitString(fnames.front(), "/").back();
+	auto end = info::splitString(fnames.back(), "/").back();
+
+	_mark("from: " << start << " to:" << endl);
 
 	for (auto fname : fnames) {
 		_dbg2(fname);

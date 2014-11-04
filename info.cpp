@@ -63,3 +63,24 @@ void info::Cut(std::string& s) {
 	auto v = nOT::nUtils::SplitString(s);
 	s=v.at(0);
 }
+vector<string> info::splitString(string toSplit, string delimiter) {
+    assert(toSplit != "");
+    assert(delimiter != "");
+
+	if(nOT::nUtils::ToStr(toSplit.back()) != delimiter)
+    	toSplit+=delimiter;
+
+    string token;
+    size_t pos = 0;
+    vector<string> data;
+
+    while ((pos = toSplit.find(delimiter)) != string::npos) {
+        token = toSplit.substr(0, pos);
+        toSplit.erase(0, pos + delimiter.length());
+        data.push_back(token);
+    }
+
+    return data;
+}
+
+
