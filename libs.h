@@ -28,6 +28,7 @@
 #include <cstdlib>
 
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 #include "boost/date_time.hpp"
 #include "boost/filesystem.hpp"

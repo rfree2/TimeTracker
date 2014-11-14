@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include test/subdir.mk
 -include otshell_utils/CMakeFiles/otshell_utils.dir/subdir.mk
 -include otshell_utils/subdir.mk
 -include subdir.mk
