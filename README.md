@@ -6,7 +6,8 @@ logging time information to readable text files.
 ### Building  
 In TimeTracker directory:
 ``` 
-cd Debug && make 
+mkdir build/ && cd build/
+cmake .. && make 
 ``` 
 
 ### Needed dependencies 

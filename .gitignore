@@ -6,6 +6,7 @@ doc/
 *.sh
 Debug/data/
 wmctrl*
+build/
 
 # Created by https://www.gitignore.io
 
@@ -78,5 +79,20 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+### vim ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+
+### Linux ###
+*~
+
+# KDE directory preferences
+.directory
 /Debug/
 /Release/
