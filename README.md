@@ -3,7 +3,7 @@ Simple Time Tracker written in C++11 based on switching X11 workspaces,
 logging time information to readable text files.
 (mainly for linux etc - see Comments)
 
-### Building  
+### Build  
 In TimeTracker directory:
 ``` 
 mkdir build/ && cd build/
@@ -11,7 +11,9 @@ cmake .. && make
 ``` 
 
 ### Needed dependencies 
-Libraries: boost_fileststem; boost_date_time; X11 (xlib)
+GCC (with C++11 support), Boost 1.55 
+
+Libraries: boost_chrono ICE Xmu glib-2.0 SM boost_filesystem boost_system X11 boost_date_time 
 
 ### Other info 
 Time Tracker gets X11 desktop name.
@@ -31,4 +33,5 @@ This is a beta version! Tested on Debian Wheezy and Gnome Classic only!
 ### Licence
 
 OpenBSD licence.
+
 
