@@ -7,7 +7,8 @@
 
 #include "summary.h"
 
-summary::summary() : displayAll_(false)
+summary::summary() :
+		displayAll_(false)
 {
 	// TODO Auto-generated constructor stub
 
@@ -22,13 +23,22 @@ summary::summary(std::vector<std::string> fnames, bool da, bool log) :
 	assert(ok);
 	getFromFile(fnames);
 
-	if(log)
-		startLogging();
-	else
-		display();
+	if (log) startLogging();
+	else display();
+}
+void summary::formatName(std::string& name) {
+	// no spaces and :
+	name.replace(name.find(" "), 1, "-");
+	size_t control = std::string::npos;
+	while (control != std::string::npos) {
+		control = name.find(":");
+		name.replace(control, 1, " ");
+	}
+	assert(name.find(" ") == std::string::npos);
+	_mark(name);
 }
 
-void summary::startLogging() {
+std::string summary::prepareForLogging() {
 	displayAll_ = true;
 	const std::string dir = "data/";
 
@@ -39,21 +49,18 @@ void summary::startLogging() {
 	oss << "OUT-" << tdate << ".txt";
 	string logname = dir + oss.str();
 
-	// no spaces and :
-	logname.replace(logname.find(" "), 1, "-");
-	size_t control = string::npos;
-	while(control != string::npos){
-		control = logname.find(":");
-		logname.replace(control, 1, " ");
-	}
-	assert(logname.find(" ")==string::npos);
-	_mark(logname);
+	formatName(logname);
 
 	// directory for logs
-	if(!boost::filesystem::exists(dir))
-		assert(boost::filesystem::create_directory(dir));
+	if (!boost::filesystem::exists(dir)) assert(boost::filesystem::create_directory(dir));
 
 	assert(!boost::filesystem::exists(logname));
+	return logname;
+}
+
+void summary::startLogging() {
+	using namespace std;
+	const auto logname = prepareForLogging();
 
 	// redirecting cout stream
 	// http://coliru.stacked-crooked.com/a/9c4729dd796c5daf
@@ -90,7 +97,7 @@ void summary::getFromFile(std::vector<std::string>& fnames) {
 		_warn("Can't open file " << fname);
 
 		else { // file is open
-			string task_date = "";
+			string lastTaskDate = "";
 
 			// reading file
 			while (!file.eof()) {
@@ -102,16 +109,21 @@ void summary::getFromFile(std::vector<std::string>& fnames) {
 				assert(tmp_task->dateToString() != "");
 
 				// if current task is first or has different date than previous, create new map for this task
-				if (task_date != tmp_task->dateToString() || task_date == "") {
-					task_date = tmp_task->dateToString();
-					taskInfo tstruct;
-					map<string, taskInfo> dMap;
-					Map_.insert(std::pair<std::string, std::map<std::string, taskInfo> >(task_date, dMap));
-				}
-				processTask(tmp_task, Map_.at(task_date));
+				if (lastTaskDate != tmp_task->dateToString() || lastTaskDate == "") lastTaskDate = createMap(tmp_task);
+
+				processTask(tmp_task, Map_.at(lastTaskDate));
 			}
 		}
 	}
+}
+
+std::string summary::createMap(const std::shared_ptr<task> task_with_diff_date) {
+	using namespace std;
+	const auto task_date = task_with_diff_date->dateToString();
+	taskInfo tstruct;
+	map<string, taskInfo> dMap;
+	Map_.insert(std::pair<std::string, std::map<std::string, taskInfo> >(task_date, dMap));
+	return task_date;
 }
 
 void summary::processTask(const std::shared_ptr<task> task_, std::map<
@@ -148,7 +160,8 @@ void summary::merge() {
 	}
 }
 
-void summary::addToMap(const std::shared_ptr<task> task_, std::map<std::string,taskInfo>& map) {
+void summary::addToMap(const std::shared_ptr<task> task_, std::map<std::string,
+		taskInfo>& map) {
 	const auto name = task_->name_;
 	taskInfo tstruct;
 	tstruct.name = name;
@@ -183,7 +196,8 @@ void summary::display() {
 	assert(!dates_.empty());
 
 	cout << "\tDays: " << endl;
-	for (auto day : dates_) cout << day << endl;
+	for (auto day : dates_)
+		cout << day << endl;
 
 	const string sep = "+-----------------------------------";
 

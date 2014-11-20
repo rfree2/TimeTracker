@@ -28,6 +28,9 @@ private:
 	void Save(std::shared_ptr<task> tts);
 	bool CheckPeriod(std::shared_ptr<task> tts, std::shared_ptr<task> prev);
 
+	void CreateContinueTask(std::shared_ptr<task> new_task);
+	void CreateEndTask(std::shared_ptr<task> new_task);
+
 	std::vector <std::shared_ptr<task>> tasks_;
 	std::vector <std::shared_ptr<task>> que_tasks_;
 		/// low: less responsive, high: higher cpu use (but anyway will be negligable)

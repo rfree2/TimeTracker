@@ -13,13 +13,14 @@ const std::vector<std::string> task::states_ = { "B", "C", "E" };
 
 task::task(std::string name) :
 		name_(name), day_time_(second_clock::local_time()), type_(B) {
-//	_fact("coonstructing task");
+	_fact("coonstructing task");
 
 }
 
 std::ostream& operator<<(std::ostream& os, const task& ctask) {
 	os << ctask.day_time_ << " " << task::states_.at(ctask.type_) << " "
 			<< ctask.name_;
+	return os;
 }
 
 task::~task() {

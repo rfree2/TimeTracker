@@ -34,9 +34,11 @@ bool detect_test::detectWindow() {
 			_dbg2(win.first << " - " << win.second);
 			ok = true;
 		}
+		_dbg1("workspace: " << info::GetCurrWorkspace());
 	}
 	return ok;
 }
 
 bool detect_test::detectWorkspace() {
+	return true;
 }

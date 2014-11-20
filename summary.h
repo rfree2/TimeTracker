@@ -34,6 +34,10 @@ private:
 	void printMaps() const; // prints Map_ and submap
 	void display(); // if displayAll is true, prints mergeMap_
 
+	std::string createMap(const std::shared_ptr<task> task_with_diff_date); // new map fo task with different date, returns new date
+	void formatName(std::string &name); // removes spaces and ":" from string
+	std::string prepareForLogging();
+
 	std::map <std::string, taskInfo> mergedMap_; // map with merged tasks from files
 	std::vector <std::string> dates_;
 	// contains date (as key) and map for every day
